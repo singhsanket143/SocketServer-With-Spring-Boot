@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/sockjs/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+</head>
+<body>
+
+<div>
+
+    <!-- <button onclick="connect()">Connect</button> -->
+</div>
+
+<div>
+    <input type="text" id="name" placeholder="name">
+    <input type="text" id="message" placeholder="message">
+    <button onclick="submit()">Submit</button>
+</div>
+
+<ul id="list">
+
+</ul>
+
+<script>
+    var stompClient = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        connect();
+    })
+    function connect() {
+        const socket = new SockJS("http://localhost:8080/ws")
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            console.log("connected");
+            stompClient.subscribe("/topic/ping", function(message) {
+                console.log("received a new message from server", message);
+            })
+            stompClient.subscribe("/topic/scheduled", function(message) {
+                console.log("received a new scheduled message from server", message);
+                const li = document.createElement("li");
+                li.textContent = message.body;
+                document.getElementById("list").appendChild(li);
+            })
+            stompClient.subscribe("/topic/message/123", function (data) {
+                const msg = JSON.parse(data.body);
+                console.log(typeof msg)
+                const li = document.createElement("li");
+                li.textContent = `${msg.name} : ${msg.timeStamp} - ${msg.message}` ;
+                document.getElementById("list").appendChild(li);
+            })
+        })
+    }
+
+    function submit() {
+        const name = document.getElementById("name").value;
+        const message = document.getElementById("message").value;
+        stompClient.send("/app/chat/123", {}, JSON.stringify({ name, message}));
+    }
+
+</script>
+
+</body>
+</html>
