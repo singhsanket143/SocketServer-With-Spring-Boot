@@ -27,6 +27,9 @@ dependencies {
     implementation 'com.example:UberProject-EntityService:0.0.8-SNAPSHOT'
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.1.1'
+    // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
+    implementation 'org.springframework.kafka:spring-kafka:3.1.4'
+
 }
 
 tasks.named('test') {
